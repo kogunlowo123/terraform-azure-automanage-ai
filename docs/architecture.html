@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>terraform-azure-automanage-ai | Architecture</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0b0c0b;color:#f5f2eb;font-family:'SF Mono','Cascadia Code','Fira Code',monospace;line-height:1.7;padding:0}
+a{color:#c8420a;text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:1200px;margin:0 auto;padding:2rem}
+header{background:linear-gradient(135deg,#0b0c0b 0%,#1a1b1a 100%);border-bottom:2px solid #c8420a;padding:2rem 0}
+header .container{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+h1{font-size:1.8rem;color:#f5f2eb}h2{font-size:1.4rem;color:#c8420a;margin:2rem 0 1rem;padding-bottom:0.5rem;border-bottom:1px solid #2a2b2a}
+.badge{background:#0078D4;color:#fff;padding:0.3rem 1rem;border-radius:4px;font-size:0.85rem;font-weight:600;letter-spacing:0.5px}.badge-type{background:#c8420a}
+.summary{background:#1a1b1a;border:1px solid #2a2b2a;border-radius:8px;padding:1.5rem;margin:1.5rem 0;font-size:0.95rem;line-height:1.8}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin:1.5rem 0}
+.card{background:#1a1b1a;border:1px solid #2a2b2a;border-radius:8px;padding:1.25rem;transition:border-color 0.2s}.card:hover{border-color:#c8420a}
+.card-title{font-size:0.95rem;color:#c8420a;margin-bottom:0.5rem}.card-value{font-size:1.3rem;color:#f5f2eb;font-weight:700}.card-desc{font-size:0.8rem;color:#888;margin-top:0.25rem}
+.arch-diagram{background:#1a1b1a;border:1px solid #2a2b2a;border-radius:8px;padding:2rem;margin:1.5rem 0;overflow-x:auto}
+.flow{display:flex;flex-direction:column;align-items:center;gap:1rem}
+.flow-row{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;align-items:center}
+.flow-box{background:#0b0c0b;border:2px solid #c8420a;border-radius:8px;padding:0.75rem 1.25rem;text-align:center;font-size:0.85rem;min-width:140px}
+.flow-box.primary{border-color:#0078D4;background:#0a1628}.flow-box.secondary{border-color:#3F8624;background:#0a1a0a}.flow-box.accent{border-color:#c8420a;background:#1a0f0a}.flow-box.purple{border-color:#8C4FFF;background:#140a28}.flow-box.warning{border-color:#FF9900;background:#1a1400}
+.flow-arrow{color:#555;font-size:1.5rem}.flow-label{font-size:0.7rem;color:#888;margin-top:0.2rem}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.85rem}
+th{background:#1a1b1a;color:#c8420a;text-align:left;padding:0.75rem;border:1px solid #2a2b2a;font-weight:600}
+td{padding:0.75rem;border:1px solid #2a2b2a;color:#f5f2eb}tr:nth-child(even){background:#111211}tr:hover{background:#1a1b1a}
+.check{color:#3F8624}.x{color:#DD344C}
+.checklist{list-style:none;padding:0}.checklist li{padding:0.4rem 0;padding-left:1.5rem;position:relative;font-size:0.9rem}.checklist li::before{content:"[  ]";position:absolute;left:0;color:#c8420a;font-size:0.85rem}
+code{background:#1a1b1a;padding:0.15rem 0.4rem;border-radius:3px;font-size:0.85rem;color:#c8420a}
+pre{background:#1a1b1a;border:1px solid #2a2b2a;border-radius:8px;padding:1.25rem;overflow-x:auto;font-size:0.85rem;margin:1rem 0}
+.data-flow-step{display:flex;align-items:flex-start;gap:1rem;margin:0.75rem 0}.step-num{background:#c8420a;color:#fff;min-width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;flex-shrink:0}.step-text{font-size:0.9rem}
+footer{background:#1a1b1a;border-top:2px solid #c8420a;padding:2rem 0;margin-top:3rem;text-align:center;font-size:0.8rem;color:#555}
+.section{margin-bottom:2rem}
+</style>
+</head>
+<body>
+<header>
+<div class="container">
+<div>
+<h1>terraform-azure-automanage-ai</h1>
+<p style="color:#888;margin-top:0.3rem;font-size:0.9rem">AI-Driven VM Management & Compliance Module</p>
+</div>
+<div>
+<span class="badge">Azure</span>
+<span class="badge badge-type">Automanage</span>
+</div>
+</div>
+</header>
+
+<div class="container">
+
+<section class="section">
+<h2>Executive Summary</h2>
+<div class="summary">
+Azure Automanage module with AI-driven infrastructure optimization providing a complete VM management platform. Provisions Automanage configuration with antimalware, automated backup via Recovery Services Vault, maintenance windows for OS patching (Linux and Windows), Azure Policy for compliance enforcement (custom and built-in), metric alerts for CPU/memory/disk/availability, Action Groups for email notifications, an Automation Account with PowerShell runbooks for self-healing remediation, and centralized Log Analytics with diagnostic settings across all components.
+</div>
+</section>
+
+<section class="section">
+<h2>Overview Cards</h2>
+<div class="cards">
+<div class="card"><div class="card-title">Resources</div><div class="card-value">15+</div><div class="card-desc">Automanage, Backup, Policy, Alerts, Automation</div></div>
+<div class="card"><div class="card-title">Variables</div><div class="card-value">13</div><div class="card-desc">3 required, 10 optional</div></div>
+<div class="card"><div class="card-title">Outputs</div><div class="card-value">8</div><div class="card-desc">Config IDs, vault, policies, automation</div></div>
+<div class="card"><div class="card-title">Alerts</div><div class="card-value">4 types</div><div class="card-desc">CPU, Memory, Disk, Availability</div></div>
+<div class="card"><div class="card-title">Backup</div><div class="card-value">GeoRedundant</div><div class="card-desc">Daily/Weekly, 30-day retention</div></div>
+<div class="card"><div class="card-title">Remediation</div><div class="card-value">Runbooks</div><div class="card-desc">PowerShell auto-restart</div></div>
+</div>
+</section>
+
+<section class="section">
+<h2>Architecture Diagram</h2>
+<div class="arch-diagram">
+<div class="flow">
+<div class="flow-row">
+<div class="flow-box primary">Virtual Machines<div class="flow-label">VM 1 / VM 2 / VM n</div></div>
+</div>
+<div class="flow-arrow">&#x2193;</div>
+<div class="flow-row">
+<div class="flow-box primary">Automanage Config<div class="flow-label">Antimalware + Backup + Log Analytics</div></div>
+<div class="flow-box secondary">Maintenance Config<div class="flow-label">Weekly patching window</div></div>
+</div>
+<div class="flow-arrow">&#x2193;</div>
+<div class="flow-row">
+<div class="flow-box purple">Recovery Services Vault<div class="flow-label">GeoRedundant, soft delete</div></div>
+<div class="flow-box purple">Backup Policy<div class="flow-label">Daily/Weekly + retention</div></div>
+</div>
+<div class="flow-arrow">&#x2193;</div>
+<div class="flow-row">
+<div class="flow-box accent">Policy Definitions<div class="flow-label">Custom rules</div></div>
+<div class="flow-box accent">Policy Assignments<div class="flow-label">Enforce on RG</div></div>
+<div class="flow-box accent">Built-in Policies<div class="flow-label">Backup + Monitoring</div></div>
+</div>
+<div class="flow-arrow">&#x2193;</div>
+<div class="flow-row">
+<div class="flow-box warning">CPU Alert >90%<div class="flow-label">Sev 2, 15m window</div></div>
+<div class="flow-box warning">Memory Alert <1GB<div class="flow-label">Sev 2, 15m window</div></div>
+<div class="flow-box warning">Disk IOPS >95%<div class="flow-label">Sev 1, 15m window</div></div>
+<div class="flow-box warning">Availability <100%<div class="flow-label">Sev 0, 5m window</div></div>
+</div>
+<div class="flow-arrow">&#x2193;</div>
+<div class="flow-row">
+<div class="flow-box secondary">Action Group<div class="flow-label">Email notifications</div></div>
+<div class="flow-box secondary">Automation Account<div class="flow-label">SystemAssigned identity</div></div>
+<div class="flow-box secondary">Runbooks<div class="flow-label">Restart-UnhealthyVM</div></div>
+</div>
+<div class="flow-arrow">&#x2193;</div>
+<div class="flow-row">
+<div class="flow-box primary">Log Analytics Workspace<div class="flow-label">Updates + Security solutions</div></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<h2>Component Breakdown</h2>
+<table>
+<tr><th>Component</th><th>Resource Type</th><th>Purpose</th><th>Configuration</th></tr>
+<tr><td>Automanage Config</td><td><code>azurerm_automanage_configuration</code></td><td>Centralized VM management profile</td><td>Antimalware, backup, log analytics, alerts</td></tr>
+<tr><td>Maintenance Config</td><td><code>azurerm_maintenance_configuration</code></td><td>OS patching schedule</td><td>InGuestPatch, weekly window, Critical+Security</td></tr>
+<tr><td>Recovery Vault</td><td><code>azurerm_recovery_services_vault</code></td><td>VM backup infrastructure</td><td>Standard SKU, GeoRedundant, soft delete</td></tr>
+<tr><td>Backup Policy</td><td><code>azurerm_backup_policy_vm</code></td><td>Backup schedule and retention</td><td>Daily/Weekly, 30d/4w/6m/1y retention</td></tr>
+<tr><td>Protected VMs</td><td><code>azurerm_backup_protected_vm</code></td><td>Register VMs for backup</td><td>for_each on vm_ids</td></tr>
+<tr><td>Policy Definitions</td><td><code>azurerm_policy_definition</code></td><td>Custom compliance rules</td><td>for_each on compliance_policies</td></tr>
+<tr><td>Policy Assignments</td><td><code>azurerm_policy_assignment</code></td><td>Enforce policies on resource group</td><td>Custom + built-in (backup, monitoring)</td></tr>
+<tr><td>Metric Alerts</td><td><code>azurerm_monitor_metric_alert</code> x4</td><td>CPU, memory, disk, availability monitoring</td><td>Per-VM alerts with action group</td></tr>
+<tr><td>Action Group</td><td><code>azurerm_monitor_action_group</code></td><td>Alert notification routing</td><td>Email receivers</td></tr>
+<tr><td>Automation Account</td><td><code>azurerm_automation_account</code></td><td>Runbook execution engine</td><td>SystemAssigned identity, VM Contributor role</td></tr>
+<tr><td>Runbooks</td><td><code>azurerm_automation_runbook</code></td><td>Self-healing remediation scripts</td><td>PowerShell, auto-restart unhealthy VMs</td></tr>
+<tr><td>Log Analytics</td><td><code>azurerm_log_analytics_workspace</code></td><td>Centralized logging</td><td>Updates + Security solutions</td></tr>
+</table>
+</section>
+
+<section class="section">
+<h2>Data Flow</h2>
+<div class="data-flow-step"><div class="step-num">1</div><div class="step-text">VMs are registered with Automanage configuration for antimalware and automated management.</div></div>
+<div class="data-flow-step"><div class="step-num">2</div><div class="step-text">Maintenance configuration assigns weekly patching windows for Critical and Security patches.</div></div>
+<div class="data-flow-step"><div class="step-num">3</div><div class="step-text">Recovery Services Vault protects VMs with scheduled backups and multi-tier retention.</div></div>
+<div class="data-flow-step"><div class="step-num">4</div><div class="step-text">Azure Policy enforces compliance rules (backup enabled, monitoring agent installed).</div></div>
+<div class="data-flow-step"><div class="step-num">5</div><div class="step-text">Metric alerts trigger when thresholds are breached (CPU, memory, disk, availability).</div></div>
+<div class="data-flow-step"><div class="step-num">6</div><div class="step-text">Action group sends email notifications to operations team.</div></div>
+<div class="data-flow-step"><div class="step-num">7</div><div class="step-text">Automation runbooks execute self-healing actions (restart unhealthy VMs).</div></div>
+<div class="data-flow-step"><div class="step-num">8</div><div class="step-text">All diagnostic data flows to Log Analytics workspace for centralized analysis.</div></div>
+</section>
+
+<section class="section">
+<h2>Security Controls</h2>
+<table>
+<tr><th>Control</th><th>Implementation</th><th>Default</th></tr>
+<tr><td>Antimalware</td><td>Real-time protection + scheduled scans</td><td>Enabled</td></tr>
+<tr><td>OS Patching</td><td>Critical + Security patches in maintenance window</td><td>Enabled</td></tr>
+<tr><td>Backup Encryption</td><td>Recovery Services Vault with soft delete</td><td>GeoRedundant</td></tr>
+<tr><td>Policy Compliance</td><td>Custom + built-in policies enforced</td><td>Enforced</td></tr>
+<tr><td>Automation Identity</td><td>SystemAssigned with VM Contributor role</td><td>Least privilege</td></tr>
+<tr><td>Monitoring</td><td>4 metric alert types per VM</td><td>Enabled per VM</td></tr>
+<tr><td>Audit Logging</td><td>Diagnostic settings on vault + automation</td><td>Enabled</td></tr>
+</table>
+</section>
+
+<section class="section">
+<h2>Industry Adaptation</h2>
+<table>
+<tr><th>Capability</th><th>Healthcare</th><th>Finance</th><th>Government</th><th>Retail</th><th>SaaS</th></tr>
+<tr><td>Antimalware</td><td class="check">&#10003; Required</td><td class="check">&#10003; Required</td><td class="check">&#10003; Required</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+<tr><td>Backup (GRS)</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+<tr><td>Patch Management</td><td class="check">&#10003; HIPAA</td><td class="check">&#10003; PCI</td><td class="check">&#10003; NIST</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+<tr><td>Policy Compliance</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+<tr><td>Self-Healing</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+<tr><td>Alerting</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td><td class="check">&#10003;</td></tr>
+</table>
+</section>
+
+<section class="section">
+<h2>Production Readiness Checklist</h2>
+<ul class="checklist">
+<li>Register all required resource providers</li>
+<li>Provide VM resource IDs for management</li>
+<li>Configure maintenance window for low-traffic periods</li>
+<li>Set backup retention to compliance requirements</li>
+<li>Enable antimalware with real-time protection</li>
+<li>Configure alert email addresses for operations team</li>
+<li>Review and customize automation runbooks</li>
+<li>Set log retention to compliance requirements (90+ days)</li>
+<li>Add custom compliance policies for organization standards</li>
+<li>Test self-healing runbooks in staging first</li>
+</ul>
+</section>
+
+<section class="section">
+<h2>Configuration Reference</h2>
+<table>
+<tr><th>Variable</th><th>Type</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>name_prefix</code></td><td>string</td><td>required</td><td>Prefix for all resource names</td></tr>
+<tr><td><code>vm_ids</code></td><td>list(string)</td><td>required</td><td>VM resource IDs to manage</td></tr>
+<tr><td><code>maintenance_window</code></td><td>object</td><td>Saturday 02:00, 5h</td><td>Patching window config</td></tr>
+<tr><td><code>backup_frequency</code></td><td>string</td><td>Daily</td><td>Daily or Weekly</td></tr>
+<tr><td><code>backup_retention_days</code></td><td>number</td><td>30</td><td>Backup retention (7-365 days)</td></tr>
+<tr><td><code>enable_antimalware</code></td><td>bool</td><td>true</td><td>Enable antimalware</td></tr>
+<tr><td><code>enable_auto_patching</code></td><td>bool</td><td>true</td><td>Enable OS patching</td></tr>
+<tr><td><code>alert_email_addresses</code></td><td>list(string)</td><td>[]</td><td>Email addresses for alerts</td></tr>
+<tr><td><code>log_retention_days</code></td><td>number</td><td>90</td><td>Log retention (30-730 days)</td></tr>
+<tr><td><code>automation_runbooks</code></td><td>list(object)</td><td>VM restart</td><td>PowerShell runbooks</td></tr>
+</table>
+</section>
+
+<section class="section">
+<h2>Deployment</h2>
+<pre>
+# Register resource providers
+az provider register --namespace Microsoft.Automanage
+az provider register --namespace Microsoft.RecoveryServices
+az provider register --namespace Microsoft.Automation
+
+# Deploy
+terraform init
+terraform plan -out=tfplan
+terraform apply tfplan
+
+# Verify backup protection
+az backup item list \
+  --resource-group myapp-rg \
+  --vault-name myapp-recovery-vault
+</pre>
+</section>
+
+<section class="section">
+<h2>Links</h2>
+<p>
+<a href="https://learn.microsoft.com/en-us/azure/automanage/overview-about">Azure Automanage</a> |
+<a href="https://learn.microsoft.com/en-us/azure/automation/overview">Azure Automation</a> |
+<a href="https://learn.microsoft.com/en-us/azure/backup/backup-azure-vms-introduction">Azure Backup for VMs</a> |
+<a href="../README.md">Module README</a>
+</p>
+</section>
+
+</div>
+
+<footer>
+<div class="container">
+<p>terraform-azure-automanage-ai Architecture Document</p>
+<p>Generated on 2026-03-15 | Terraform Azure Module</p>
+</div>
+</footer>
+</body>
+</html>
