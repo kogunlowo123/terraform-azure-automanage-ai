@@ -1,17 +1,9 @@
-###############################################################################
-# Data Sources
-###############################################################################
-
 data "azurerm_subscription" "current" {}
 data "azurerm_client_config" "current" {}
 
 data "azurerm_resource_group" "this" {
   name = var.resource_group_name
 }
-
-###############################################################################
-# Log Analytics Workspace
-###############################################################################
 
 resource "azurerm_log_analytics_workspace" "this" {
   name                = "${var.name_prefix}-log-analytics"
@@ -53,10 +45,6 @@ resource "azurerm_log_analytics_solution" "security" {
   tags = var.tags
 }
 
-###############################################################################
-# Automanage Configuration
-###############################################################################
-
 resource "azurerm_automanage_configuration" "this" {
   name                = "${var.name_prefix}-automanage-config"
   resource_group_name = var.resource_group_name
@@ -78,9 +66,9 @@ resource "azurerm_automanage_configuration" "this" {
   automation_account_enabled = true
 
   backup {
-    policy_name                                 = "${var.name_prefix}-backup-policy"
-    time_zone                                   = "UTC"
-    instant_rp_retention_range_in_days          = 5
+    policy_name                        = "${var.name_prefix}-backup-policy"
+    time_zone                          = "UTC"
+    instant_rp_retention_range_in_days = 5
     schedule_policy {
       schedule_run_frequency = var.backup_frequency
       schedule_run_times     = ["12:00"]
@@ -105,15 +93,11 @@ resource "azurerm_automanage_configuration" "this" {
     }
   }
 
-  log_analytics_enabled = true
+  log_analytics_enabled       = true
   status_change_alert_enabled = true
 
   tags = var.tags
 }
-
-###############################################################################
-# Maintenance Configuration
-###############################################################################
 
 resource "azurerm_maintenance_configuration" "this" {
   name                = "${var.name_prefix}-maintenance-config"
@@ -150,10 +134,6 @@ resource "azurerm_maintenance_assignment_virtual_machine" "this" {
   maintenance_configuration_id = azurerm_maintenance_configuration.this.id
   virtual_machine_id           = each.value
 }
-
-###############################################################################
-# Recovery Services Vault & Backup
-###############################################################################
 
 resource "azurerm_recovery_services_vault" "this" {
   name                = "${var.name_prefix}-recovery-vault"
@@ -215,10 +195,6 @@ resource "azurerm_backup_protected_vm" "this" {
   depends_on = [azurerm_backup_policy_vm.this]
 }
 
-###############################################################################
-# Diagnostic Settings
-###############################################################################
-
 resource "azurerm_monitor_diagnostic_setting" "vault" {
   name                       = "${var.name_prefix}-vault-diagnostics"
   target_resource_id         = azurerm_recovery_services_vault.this.id
@@ -254,10 +230,6 @@ resource "azurerm_monitor_diagnostic_setting" "vault" {
   }
 }
 
-###############################################################################
-# Custom Compliance Policies
-###############################################################################
-
 resource "azurerm_policy_definition" "custom" {
   for_each = { for p in var.compliance_policies : p.name => p }
 
@@ -281,10 +253,6 @@ resource "azurerm_policy_assignment" "custom" {
   enforce              = true
 }
 
-###############################################################################
-# Built-in Policy Assignments
-###############################################################################
-
 resource "azurerm_policy_assignment" "require_vm_backup" {
   name                 = "${var.name_prefix}-require-vm-backup"
   scope                = data.azurerm_resource_group.this.id
@@ -303,10 +271,6 @@ resource "azurerm_policy_assignment" "require_monitoring_agent" {
   enforce              = false
 }
 
-###############################################################################
-# Monitor Action Group
-###############################################################################
-
 resource "azurerm_monitor_action_group" "this" {
   name                = "${var.name_prefix}-action-group"
   resource_group_name = var.resource_group_name
@@ -323,10 +287,6 @@ resource "azurerm_monitor_action_group" "this" {
 
   tags = var.tags
 }
-
-###############################################################################
-# Metric Alerts
-###############################################################################
 
 resource "azurerm_monitor_metric_alert" "cpu_alert" {
   for_each = toset(var.vm_ids)
@@ -431,10 +391,6 @@ resource "azurerm_monitor_metric_alert" "vm_availability" {
 
   tags = var.tags
 }
-
-###############################################################################
-# Automation Account & Runbooks
-###############################################################################
 
 resource "azurerm_automation_account" "this" {
   name                = "${var.name_prefix}-automation"

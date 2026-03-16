@@ -1,5 +1,5 @@
 variable "name_prefix" {
-  description = "Prefix for all resource names"
+  description = "Prefix for all resource names."
   type        = string
 
   validation {
@@ -9,17 +9,17 @@ variable "name_prefix" {
 }
 
 variable "location" {
-  description = "Azure region for all resources"
+  description = "Azure region for all resources."
   type        = string
 }
 
 variable "resource_group_name" {
-  description = "Name of the Azure resource group"
+  description = "Name of the Azure resource group."
   type        = string
 }
 
 variable "vm_ids" {
-  description = "List of Virtual Machine resource IDs to manage"
+  description = "List of Virtual Machine resource IDs to manage."
   type        = list(string)
 
   validation {
@@ -29,7 +29,7 @@ variable "vm_ids" {
 }
 
 variable "maintenance_window" {
-  description = "Maintenance window configuration"
+  description = "Maintenance window configuration for patching."
   type = object({
     day        = string
     start_time = string
@@ -48,7 +48,7 @@ variable "maintenance_window" {
 }
 
 variable "backup_frequency" {
-  description = "Frequency of VM backups (Daily or Weekly)"
+  description = "Frequency of VM backups (Daily or Weekly)."
   type        = string
   default     = "Daily"
 
@@ -59,7 +59,7 @@ variable "backup_frequency" {
 }
 
 variable "backup_retention_days" {
-  description = "Number of days to retain VM backups"
+  description = "Number of days to retain VM backups."
   type        = number
   default     = 30
 
@@ -70,19 +70,19 @@ variable "backup_retention_days" {
 }
 
 variable "enable_antimalware" {
-  description = "Enable Microsoft Antimalware extension on VMs"
+  description = "Enable Microsoft Antimalware extension on VMs."
   type        = bool
   default     = true
 }
 
 variable "enable_auto_patching" {
-  description = "Enable automatic OS patching during maintenance windows"
+  description = "Enable automatic OS patching during maintenance windows."
   type        = bool
   default     = true
 }
 
 variable "compliance_policies" {
-  description = "List of custom Azure Policy definitions for compliance"
+  description = "List of custom Azure Policy definitions for compliance."
   type = list(object({
     name         = string
     display_name = string
@@ -94,7 +94,7 @@ variable "compliance_policies" {
 }
 
 variable "alert_email_addresses" {
-  description = "Email addresses for monitoring alert notifications"
+  description = "Email addresses for monitoring alert notifications."
   type        = list(string)
   default     = []
 
@@ -105,7 +105,7 @@ variable "alert_email_addresses" {
 }
 
 variable "log_retention_days" {
-  description = "Number of days to retain logs in Log Analytics workspace"
+  description = "Number of days to retain logs in Log Analytics workspace."
   type        = number
   default     = 90
 
@@ -116,7 +116,7 @@ variable "log_retention_days" {
 }
 
 variable "automation_runbooks" {
-  description = "List of automation runbooks for auto-remediation"
+  description = "List of automation runbooks for auto-remediation."
   type = list(object({
     name         = string
     description  = string
@@ -156,7 +156,7 @@ variable "automation_runbooks" {
 }
 
 variable "tags" {
-  description = "Tags to apply to all resources"
+  description = "Tags to apply to all resources."
   type        = map(string)
   default     = {}
 }
